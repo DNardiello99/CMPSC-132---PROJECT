@@ -1,0 +1,144 @@
+#DOMINIC NARDIELLO COMP SCI 132 TAKE HOME ASSIGNMENT
+
+# ~ PROBLEM 1 ~
+
+class BankAccount:
+    def __init__ (self, account_holder, balance):
+        self.account_holder = account_holder
+        self.balance = balance
+    def deposit(self, amount: float):
+        #Code goes here
+        amount = float(amount)
+        if amount > 0:
+            self.balance += amount
+        pass
+    def withdraw(self, amount: float):
+        #Code goes here
+        amount = float(amount)
+        if amount > 0 and self.balance >= amount:
+            self.balance -= amount
+        pass
+    def get_balance(self):
+        return float(self.balance)
+        #Code goes here
+        pass
+    def str_(self):
+        #Code goes here
+        return f"Account Holder: {self.account_holder}, Balance: ${self.balance}"
+        pass
+
+class SavingsAccount(BankAccount):
+        #Code goes here
+    def apply_interest(self):
+        #Code goes here
+        if self.balance <= 1000:
+            interest = self.balance * 0.03
+        elif self.balance <= 5000:
+            interest = self.balance * 0.05
+        else:
+            interest = self.balance * 0.07
+        self.deposit(interest)
+        pass
+    def str (self):
+        #Code goes here
+        return f"Savings Account - Holder: {self.account_holder}, Balance: ${self.balance}"
+        pass
+class CheckingAccount(BankAccount):
+    #Code goes here
+    def withdraw(self, amount: float):
+        #Code goes here
+        amount = float(amount)
+        if amount <= 0:
+            return None
+        new = self.balance - amount
+        if new < -500:
+            print("Overdraft limit exceeded")
+            return None
+        if new < 0:
+            self.balance = new - 25.0
+            print(f"New balance: ${self.balance} (including fee)")
+        else:
+            self.balance = new
+        pass
+
+# TESTING PROBLEM 1
+
+savings = SavingsAccount("John Doe" , 500)
+savings.deposit(200)
+print(f"Expected 700, Got: {savings.get_balance()}")
+
+# ~ PROBLEM 2 ~
+
+class ListNode:
+    def __init__ (self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def find_cycle_length(head):
+    if head is None:
+        return -1
+    slow = head
+    fast = head
+    cycle = False
+    while fast is not None and fast.next is not None and not cycle:
+        slow = slow.next
+        fast = fast.next.next  
+        if slow == fast:
+            cycle = True
+    if not cycle:
+        return -1
+    current = slow.next
+    length = 1
+    while current != slow:
+        current = current.next
+        length += 1
+    return length
+    pass
+
+# TESTING PROBLEM 2
+
+if __name__ == '__main__':
+# Test Case 1: List with a cycle of length 3
+# 1 -> 2 -> 3 -> 4 -> 5
+# ^---------|
+    node1 = ListNode(1)
+    node2 = ListNode(2)
+    node3 = ListNode(3)
+    node4 = ListNode(4)
+    node5 = ListNode(5)
+    node1.next = node2
+    node2.next = node3
+    node3.next = node4
+    node4.next = node5
+    node5.next = node3 # Creates the cycle back to node 3
+    print(f"Test 1 (Expected 3): {find_cycle_length(node1)}")
+
+# ~ PROBLEM 3 ~
+
+def findSmallestIndex(nums, target):
+    # Track the minimum value among elements to the right
+    min_after = float('inf')
+    smallest = -1
+    # Traverse from right to left (second last element to first)
+    for i in range(len(nums) - 2, -1, -1):
+        # Update the minimum value seen so far on the right
+        min_after = min(min_after, nums[i + 1])
+        # Check if all elements after index i are strictly greater than target
+        if min_after > target:
+            smallest = i
+    return smallest
+
+# TESTING PROBLEM 3
+
+nums = [1,2,3,5,6,7]
+target = 4
+print(findSmallestIndex(nums, target))
+
+# ~ PROBLEM 4 ~
+
+from functools import reduce
+def process_pipeline(funcs):
+    def pipeline_runner(L):
+        return list(map(lambda x: reduce(lambda current_val, func: func(current_val), funcs, x), L))
+    return pipeline_runner
+
